@@ -1,10 +1,10 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Lab8_starter",
+    "short_name": "Angelo Avanzado",
     "description": "",
     "start_url": "",
-    "display": "",
-    "background_color": "",
+    "display": "standalone",
+    "background_color": "green",
     "theme_color": "",
     "icons": [
       {
