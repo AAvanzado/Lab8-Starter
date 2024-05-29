@@ -9,7 +9,12 @@ self.addEventListener('install', function (event) {
     caches.open(CACHE_NAME).then(function (cache) {
       // B6. TODO - Add all of the URLs from RECIPE_URLs here so that they are
       //            added to the cache when the ServiceWorker is installed
-      return cache.addAll([]);
+      return cache.addAll(['https://adarsh249.github.io/Lab8-Starter/recipes/1_50-thanksgiving-side-dishes.json',
+      'https://adarsh249.github.io/Lab8-Starter/recipes/2_roasting-turkey-breast-with-stuffing.json',
+      'https://adarsh249.github.io/Lab8-Starter/recipes/3_moms-cornbread-stuffing.json',
+      'https://adarsh249.github.io/Lab8-Starter/recipes/4_50-indulgent-thanksgiving-side-dishes-for-any-holiday-gathering.json',
+      'https://adarsh249.github.io/Lab8-Starter/recipes/5_healthy-thanksgiving-recipe-crockpot-turkey-breast.json',
+      'https://adarsh249.github.io/Lab8-Starter/recipes/6_one-pot-thanksgiving-dinner.json']);
     })
   );
 });
@@ -34,7 +39,33 @@ self.addEventListener('fetch', function (event) {
   /*******************************/
   // B7. TODO - Respond to the event by opening the cache using the name we gave
   //            above (CACHE_NAME)
-  // B8. TODO - If the request is in the cache, return with the cached version.
-  //            Otherwise fetch the resource, add it to the cache, and return
-  //            network response.
+  event.respondWith(caches.open(CACHE_NAME).then ((cache)=>{
+    // B8. TODO - If the request is in the cache, return with the cached version.
+    //            Otherwise fetch the resource, add it to the cache, and return
+    //            network response.
+    return cache.match(event.request).then(function(response) {  // <-- Here
+      if (response) {
+        // If the request is in the cache, return the cached version
+        return response;
+      }
+
+      // Otherwise, fetch the resource from the network
+      return fetch(event.request).then(function(networkResponse) {
+        // Check if we received a valid response
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
+
+        // Clone the response before putting it in the cache because the response stream can only be consumed once
+        const responseToCache = networkResponse.clone();
+
+        // Add the network response to the cache
+        cache.put(event.request, responseToCache);
+
+        // Return the network response
+        return networkResponse;
+      });
+    });
+  })
+  );
 });
